@@ -22,7 +22,7 @@ export default function AdminPage() {
     });
 
     if (error) {
-      setMessage("Login failed. Email অথবা Password পরীক্ষা করো।");
+      setMessage("Login error: " + error.message);
       setLoading(false);
       return;
     }
