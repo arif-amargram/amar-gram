@@ -1,114 +1,187 @@
 
+"use client";
+
+import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-const quickLinks = [
-  { icon: "🏫", title: "শিক্ষাপ্রতিষ্ঠান", text: "স্কুল, কলেজ ও মাদ্রাসার তথ্য" },
-  { icon: "🕌", title: "ধর্মীয় প্রতিষ্ঠান", text: "মসজিদ ও অন্যান্য প্রতিষ্ঠানের তথ্য" },
-  { icon: "🏥", title: "স্বাস্থ্যসেবা", text: "ক্লিনিক, ফার্মেসি ও জরুরি সেবা" },
-  { icon: "🛍️", title: "স্থানীয় ব্যবসা", text: "দোকান ও সেবাদানকারীর পরিচিতি" },
-  { icon: "📍", title: "দর্শনীয় স্থান", text: "গ্রামের পরিচিত স্থান ও তথ্য" },
-  { icon: "👥", title: "গ্রামবাসী", text: "সম্মতিসহ প্রকাশিত পরিচিতি" },
-];
+export default function AdminPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
 
-export default async function Home() {
-  const { data: villages } = await supabase
-    .from("villages")
-    .select("name, history, description")
-    .eq("status", "published")
-    .limit(1);
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
-  const village = villages?.[0];
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setMessage("Login failed: " + error.message);
+      setLoading(false);
+      return;
+    }
+
+    if (data.user?.app_metadata?.role === "admin") {
+      setIsAdmin(true);
+      setMessage("Admin Login Successful!");
+    } else {
+      await supabase.auth.signOut();
+      setMessage("তোমার Admin permission নেই।");
+    }
+
+    setLoading(false);
+  }
+
+  async function handleForgotPassword(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo:
+        "https://eloquent-flan-a40f60.netlify.app/auth/update-password",
+    });
+
+    if (error) {
+      setMessage("Recovery failed: " + error.message);
+    } else {
+      setMessage("Password Reset Email পাঠানো হয়েছে। Gmail পরীক্ষা করো।");
+    }
+
+    setLoading(false);
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setIsAdmin(false);
+    setEmail("");
+    setPassword("");
+    setMessage("Logout successful.");
+  }
 
   return (
-    <main>
-      <header className="topbar">
-        <a className="brand" href="#">
-          <span className="brand-mark">আ</span>
-          <span>আমার গ্রাম</span>
-        </a>
-        <span className="tagline">গ্রামের তথ্য, সবার জন্য</span>
-      </header>
+    <main className="min-h-screen bg-gray-100 flex items-center justify-center p-5">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-center text-green-700 mb-2">
+          আমার গ্রাম
+        </h1>
 
-      <section className="hero">
-        <div className="hero-content">
-          <p className="eyebrow">WELCOME TO AMAR GRAM</p>
-          <h1>
-            আমার গ্রাম,<br />
-            <span>আমাদের পরিচয়</span>
-          </h1>
-          <p className="hero-copy">
-            নিজের গ্রামের প্রয়োজনীয় তথ্য, প্রতিষ্ঠান, স্থানীয় ব্যবসা ও পরিচিতি
-            এক জায়গায় খুঁজে পাওয়ার সহজ উদ্যোগ।
-          </p>
+        <p className="text-center text-gray-500 mb-8">
+          Admin Panel
+        </p>
 
-          <div className="location-chip">
-            📍 {village?.name || "দর্শনগ্রাম"} · বিষা · আত্রাই · নওগাঁ
+        {isAdmin ? (
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-green-700 mb-4">
+              Welcome, Admin!
+            </h2>
+            <p className="text-gray-600 mb-6">
+              তুমি সফলভাবে Admin Panel-এ প্রবেশ করেছ।
+            </p>
+            <button
+              onClick={handleLogout}
+              className="w-full bg-red-600 text-white py-3 rounded-lg"
+            >
+              Logout
+            </button>
           </div>
+        ) : forgotPassword ? (
+          <form onSubmit={handleForgotPassword} className="space-y-5">
+            <label className="block font-medium">
+              Admin Email Address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full border rounded-lg p-3"
+              placeholder="Admin email"
+            />
 
-          <p className="small-note">
-            {village?.description ||
-              "গ্রামের তথ্য সংগ্রহ ও যাচাইয়ের কাজ চলছে।"}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-green-700 text-white py-3 rounded-lg disabled:opacity-50"
+            >
+              {loading ? "Sending..." : "Send Reset Link"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setForgotPassword(false);
+                setMessage("");
+              }}
+              className="w-full text-green-700 underline"
+            >
+              Back to Login
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block mb-2 font-medium">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full border rounded-lg p-3"
+                placeholder="Admin email"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-2 font-medium">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full border rounded-lg p-3"
+                placeholder="Password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-green-700 text-white py-3 rounded-lg disabled:opacity-50"
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setForgotPassword(true);
+                setMessage("");
+              }}
+              className="w-full text-green-700 underline"
+            >
+              Forgot Password?
+            </button>
+          </form>
+        )}
+
+        {message && (
+          <p className="text-center mt-5 text-sm text-gray-700 break-words">
+            {message}
           </p>
-        </div>
-
-        <div className="hero-art" aria-hidden="true">
-          <div className="sun" />
-          <div className="hill hill-back" />
-          <div className="hill hill-front" />
-          <div className="house">⌂</div>
-          <div className="tree tree-one">♣</div>
-          <div className="tree tree-two">♣</div>
-          <div className="river" />
-        </div>
-      </section>
-
-      {village?.history && (
-        <section className="section">
-          <div className="section-heading">
-            <p className="eyebrow">VILLAGE HISTORY</p>
-            <h2>{village.name} গ্রামের ইতিহাস</h2>
-            <p>{village.history}</p>
-          </div>
-        </section>
-      )}
-
-      <section className="section">
-        <div className="section-heading">
-          <p className="eyebrow">EXPLORE YOUR VILLAGE</p>
-          <h2>গ্রামের তথ্য খুঁজুন</h2>
-          <p>
-            একটি সুন্দর, তথ্যসমৃদ্ধ ও সবার জন্য উন্মুক্ত গ্রাম directory
-            গড়ে তোলাই আমাদের লক্ষ্য।
-          </p>
-        </div>
-
-        <div className="cards">
-          {quickLinks.map((item) => (
-            <article className="info-card" key={item.title}>
-              <span className="card-icon">{item.icon}</span>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="notice">
-        <div>
-          <p className="eyebrow">OUR INITIATIVE</p>
-          <h2>তথ্য হোক সবার হাতের নাগালে</h2>
-          <p>
-            সঠিক তথ্য সংগ্রহ, যাচাই এবং অনুমতি নিয়ে প্রকাশের মাধ্যমে
-            গ্রামের মানুষের উপকারে আসাই আমাদের উদ্দেশ্য।
-          </p>
-        </div>
-        <span className="notice-icon">🌱</span>
-      </section>
-
-      <footer>
-        <strong>আমার গ্রাম | AMAR GRAM</strong>
-        <span>একটি কমিউনিটি উদ্যোগ · © 2026</span>
-      </footer>
+        )}
+      </div>
     </main>
   );
 }
