@@ -10,6 +10,7 @@ export default function AdminPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,6 +34,25 @@ export default function AdminPage() {
     } else {
       await supabase.auth.signOut();
       setMessage("তোমার Admin permission নেই।");
+    }
+
+    setLoading(false);
+  }
+
+  async function handleForgotPassword(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo:
+        "https://eloquent-flan-a40f60.netlify.app/auth/update-password",
+    });
+
+    if (error) {
+      setMessage("Recovery failed: " + error.message);
+    } else {
+      setMessage("Recovery Email পাঠানো হয়েছে। Gmail পরীক্ষা করো।");
     }
 
     setLoading(false);
@@ -72,6 +92,41 @@ export default function AdminPage() {
               Logout
             </button>
           </div>
+        ) : forgotPassword ? (
+          <form onSubmit={handleForgotPassword} className="space-y-5">
+            <div>
+              <label className="block mb-2 font-medium">
+                Admin Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full border rounded-lg p-3"
+                placeholder="Admin email"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-green-700 text-white py-3 rounded-lg disabled:opacity-50"
+            >
+              {loading ? "Sending..." : "Send Reset Link"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setForgotPassword(false);
+                setMessage("");
+              }}
+              className="w-full text-green-700 underline"
+            >
+              Back to Login
+            </button>
+          </form>
         ) : (
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
@@ -109,11 +164,22 @@ export default function AdminPage() {
             >
               {loading ? "Logging in..." : "Login"}
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setForgotPassword(true);
+                setMessage("");
+              }}
+              className="w-full text-green-700 underline"
+            >
+              Forgot Password?
+            </button>
           </form>
         )}
 
         {message && (
-          <p className="text-center mt-5 text-sm text-gray-700">
+          <p className="text-center mt-5 text-sm text-gray-700 break-words">
             {message}
           </p>
         )}
