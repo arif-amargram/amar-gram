@@ -2,9 +2,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export default function UpdatePasswordPage() {
+  const router = useRouter();
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("Checking recovery link...");
@@ -12,10 +15,28 @@ export default function UpdatePasswordPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function checkSession() {
-      const { data, error } = await supabase.auth.getSession();
+    async function verifyRecovery() {
+      const params = new URLSearchParams(window.location.search);
+      const tokenHash = params.get("token_hash");
+      const type = params.get("type");
 
-      if (error || !data.session) {
+      if (tokenHash && type === "recovery") {
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: "recovery",
+        });
+
+        if (error) {
+          setMessage("Recovery link invalid or expired. Please request a new link.");
+          return;
+        }
+
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+
+      const { data } = await supabase.auth.getSession();
+
+      if (!data.session) {
         setMessage("Recovery link invalid or expired. Please request a new link.");
         return;
       }
@@ -24,7 +45,7 @@ export default function UpdatePasswordPage() {
       setMessage("Enter your new password.");
     }
 
-    checkSession();
+    verifyRecovery();
   }, []);
 
   async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
@@ -49,10 +70,11 @@ export default function UpdatePasswordPage() {
     if (error) {
       setMessage("Update failed: " + error.message);
     } else {
-      setMessage("Password updated successfully! You can now login.");
+      await supabase.auth.signOut();
       setReady(false);
       setPassword("");
       setConfirmPassword("");
+      setMessage("Password updated successfully! You can now login.");
     }
 
     setLoading(false);
