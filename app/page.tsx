@@ -1,187 +1,74 @@
 
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
-export default function AdminPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [forgotPassword, setForgotPassword] = useState(false);
-
-  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setMessage("Login failed: " + error.message);
-      setLoading(false);
-      return;
-    }
-
-    if (data.user?.app_metadata?.role === "admin") {
-      setIsAdmin(true);
-      setMessage("Admin Login Successful!");
-    } else {
-      await supabase.auth.signOut();
-      setMessage("তোমার Admin permission নেই।");
-    }
-
-    setLoading(false);
-  }
-
-  async function handleForgotPassword(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo:
-        "https://eloquent-flan-a40f60.netlify.app/auth/update-password",
-    });
-
-    if (error) {
-      setMessage("Recovery failed: " + error.message);
-    } else {
-      setMessage("Password Reset Email পাঠানো হয়েছে। Gmail পরীক্ষা করো।");
-    }
-
-    setLoading(false);
-  }
-
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    setIsAdmin(false);
-    setEmail("");
-    setPassword("");
-    setMessage("Logout successful.");
-  }
-
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gray-100 flex items-center justify-center p-5">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-green-700 mb-2">
-          আমার গ্রাম
-        </h1>
+    <main className="min-h-screen bg-green-50">
+      <header className="bg-green-800 text-white px-6 py-5">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold">আমার গ্রাম</h1>
+          <Link
+            href="/admin"
+            className="bg-white text-green-800 px-4 py-2 rounded-lg font-semibold"
+          >
+            অ্যাডমিন লগইন
+          </Link>
+        </div>
+      </header>
 
-        <p className="text-center text-gray-500 mb-8">
-          Admin Panel
+      <section className="text-center px-5 py-20">
+        <h2 className="text-4xl font-bold text-green-900 mb-5">
+          নিজের গ্রামকে জানুন, গ্রামকে ভালোবাসুন
+        </h2>
+        <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-8">
+          বাংলাদেশের প্রতিটি গ্রামের ইতিহাস, ঐতিহ্য, দর্শনীয় স্থান,
+          কৃতী মানুষ এবং প্রয়োজনীয় তথ্য এক জায়গায়।
         </p>
 
-        {isAdmin ? (
-          <div className="text-center">
-            <h2 className="text-xl font-semibold text-green-700 mb-4">
-              Welcome, Admin!
-            </h2>
-            <p className="text-gray-600 mb-6">
-              তুমি সফলভাবে Admin Panel-এ প্রবেশ করেছ।
-            </p>
-            <button
-              onClick={handleLogout}
-              className="w-full bg-red-600 text-white py-3 rounded-lg"
-            >
-              Logout
-            </button>
-          </div>
-        ) : forgotPassword ? (
-          <form onSubmit={handleForgotPassword} className="space-y-5">
-            <label className="block font-medium">
-              Admin Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full border rounded-lg p-3"
-              placeholder="Admin email"
-            />
+        <div className="max-w-xl mx-auto flex gap-2">
+          <input
+            type="text"
+            placeholder="আপনার গ্রামের নাম লিখুন..."
+            className="flex-1 min-w-0 border border-green-300 rounded-lg px-4 py-3"
+          />
+          <button className="bg-green-700 text-white px-5 py-3 rounded-lg">
+            খুঁজুন
+          </button>
+        </div>
+      </section>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-green-700 text-white py-3 rounded-lg disabled:opacity-50"
-            >
-              {loading ? "Sending..." : "Send Reset Link"}
-            </button>
+      <section className="max-w-6xl mx-auto px-5 pb-16">
+        <h2 className="text-2xl font-bold text-green-900 text-center mb-8">
+          আমাদের গ্রামের তথ্য
+        </h2>
 
-            <button
-              type="button"
-              onClick={() => {
-                setForgotPassword(false);
-                setMessage("");
-              }}
-              className="w-full text-green-700 underline"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            ["গ্রামের ইতিহাস", "গ্রামের অতীত, ঐতিহ্য ও পরিচিতি জানুন।"],
+            ["দর্শনীয় স্থান", "গ্রামের সুন্দর ও গুরুত্বপূর্ণ স্থানগুলো দেখুন।"],
+            ["কৃতী ব্যক্তিত্ব", "গ্রামের গুণী ও পরিচিত মানুষদের সম্পর্কে জানুন।"],
+            ["গ্রামের জনপ্রতিনিধি", "গ্রামের দায়িত্বশীল ব্যক্তিদের তথ্য জানুন।"],
+            ["স্থানীয় ব্যবসা", "গ্রামের দোকান ও ব্যবসা প্রতিষ্ঠানের তথ্য খুঁজুন।"],
+            ["গ্রামের যোগাযোগ", "গ্রামের প্রয়োজনীয় যোগাযোগের তথ্য দেখুন।"],
+          ].map(([title, description]) => (
+            <div
+              key={title}
+              className="bg-white rounded-xl shadow p-6 text-center"
             >
-              Back to Login
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div>
-              <label className="block mb-2 font-medium">
-                Email Address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full border rounded-lg p-3"
-                placeholder="Admin email"
-              />
+              <h3 className="text-xl font-bold text-green-800 mb-3">
+                {title}
+              </h3>
+              <p className="text-gray-600">{description}</p>
             </div>
+          ))}
+        </div>
+      </section>
 
-            <div>
-              <label className="block mb-2 font-medium">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full border rounded-lg p-3"
-                placeholder="Password"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-green-700 text-white py-3 rounded-lg disabled:opacity-50"
-            >
-              {loading ? "Logging in..." : "Login"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setForgotPassword(true);
-                setMessage("");
-              }}
-              className="w-full text-green-700 underline"
-            >
-              Forgot Password?
-            </button>
-          </form>
-        )}
-
-        {message && (
-          <p className="text-center mt-5 text-sm text-gray-700 break-words">
-            {message}
-          </p>
-        )}
-      </div>
+      <footer className="bg-green-900 text-white text-center p-5">
+        © ২০২৬ আমার গ্রাম | গ্রামের তথ্য, সবার জন্য
+      </footer>
     </main>
   );
 }
