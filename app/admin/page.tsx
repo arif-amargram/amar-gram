@@ -51,7 +51,19 @@ const [placeLoading, setPlaceLoading] = useState(false);
 
     setVillages(data || []);
   }
+async function loadPlaces() {
+  const { data, error } = await supabase
+    .from("places")
+    .select("*")
+    .order("name");
 
+  if (error) {
+    setMessage("দর্শনীয় স্থানের তথ্য লোড হয়নি: " + error.message);
+    return;
+  }
+
+  setPlaces(data || []);
+}
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
