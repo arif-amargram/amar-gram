@@ -266,154 +266,119 @@ export default function AdminPage() {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen md:flex">
-          <aside className="w-full md:w-64 bg-[#174c35] text-white md:min-h-screen p-6">
-            <div className="text-2xl font-bold mb-2">🌿 আমার গ্রাম</div>
-            <p className="text-green-200 text-sm mb-8">Admin Dashboard</p>
+        
+<div className="admin-dashboard">
+  <aside className="admin-sidebar">
+    <div style={{ fontSize: "35px" }}>🌿</div>
+    <h2>আমার গ্রাম</h2>
+    <p style={{ color: "#c6e5d2" }}>Admin Control Panel</p>
 
-            <nav className="space-y-2">
-              <a href="#dashboard" className="block p-3 rounded-xl bg-white/15">
-                📊 Dashboard
-              </a>
-              <a href="#village-management" className="block p-3 rounded-xl hover:bg-white/10">
-                🏡 Village Management
-              </a>
-              <a href="/" className="block p-3 rounded-xl hover:bg-white/10">
-                🌐 View Website
-              </a>
-            </nav>
+    <nav>
+      <a href="#dashboard">📊 Dashboard</a>
+      <a href="#village-management">🏡 Village Management</a>
+      <a href="/">🌐 View Website</a>
+    </nav>
 
-            <button
-              onClick={handleLogout}
-              className="mt-8 w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold"
-            >
-              ↪ Logout
-            </button>
-          </aside>
+    <button
+      onClick={handleLogout}
+      className="admin-logout"
+    >
+      ↪ Logout
+    </button>
+  </aside>
 
-          <section className="flex-1 p-5 md:p-9">
-            <div id="dashboard" className="mb-8">
-              <p className="text-green-700 font-semibold text-sm">
-                ADMINISTRATION
-              </p>
-              <h1 className="text-3xl font-bold mt-2">Dashboard Overview</h1>
-              <p className="text-gray-500 mt-2">
-                আমার গ্রাম ওয়েবসাইটের তথ্য পরিচালনা করো।
-              </p>
-            </div>
+  <section className="admin-content">
+    <div id="dashboard" className="admin-header">
+      <p style={{ color: "#176b4a", fontWeight: "bold" }}>
+        ADMINISTRATION PORTAL
+      </p>
+      <h1>Dashboard Overview</h1>
+      <p>আমার গ্রাম ওয়েবসাইটের সকল তথ্য এখান থেকে পরিচালনা করুন।</p>
+    </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-100">
-                <div className="text-3xl mb-3">🏡</div>
-                <p className="text-gray-500">মোট গ্রাম</p>
-                <h2 className="text-3xl font-bold text-green-800 mt-2">
-                  {villages.length}
-                </h2>
-              </div>
+    <div className="admin-stats">
+      <div className="admin-stat-card">
+        <div className="stat-icon">🏡</div>
+        <p>মোট গ্রাম</p>
+        <h3>{villages.length}</h3>
+      </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-100">
-                <div className="text-3xl mb-3">📝</div>
-                <p className="text-gray-500">তথ্য পরিচালনা</p>
-                <h2 className="text-xl font-bold text-green-800 mt-2">
-                  Village Information
-                </h2>
-              </div>
+      <div className="admin-stat-card">
+        <div className="stat-icon">📝</div>
+        <p>Village Information</p>
+        <h3>Management</h3>
+      </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-100">
-                <div className="text-3xl mb-3">🌐</div>
-                <p className="text-gray-500">Website Status</p>
-                <h2 className="text-xl font-bold text-green-800 mt-2">
-                  Connected
-                </h2>
-              </div>
-            </div>
+      <div className="admin-stat-card">
+        <div className="stat-icon">🌐</div>
+        <p>Website Status</p>
+        <h3>Connected</h3>
+      </div>
+    </div>
 
-            <div
-              id="village-management"
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8"
-            >
-              <div className="mb-7">
-                <h2 className="text-2xl font-bold text-green-800">
-                  🏡 Village Information Management
-                </h2>
-                <p className="text-gray-500 mt-2">
-                  গ্রামের ইতিহাস ও পরিচিতি যোগ অথবা পরিবর্তন করো।
-                </p>
-              </div>
+    <div id="village-management" className="admin-panel">
+      <h2>🏡 Village Information Management</h2>
+      <p>গ্রামের ইতিহাস ও পরিচিতি যোগ অথবা পরিবর্তন করুন।</p>
 
-              <form onSubmit={handleSave} className="space-y-6">
-                <label className="block">
-                  <span className="block mb-2 font-semibold">
-                    গ্রাম নির্বাচন করুন
-                  </span>
-                  <select
-                    value={selectedVillageId}
-                    onChange={(e) => handleVillageChange(e.target.value)}
-                    required
-                    className="w-full border border-gray-200 rounded-xl p-4 bg-white focus:border-green-600 outline-none"
-                  >
-                    <option value="">গ্রাম নির্বাচন করুন</option>
-                    {villages.map((village) => (
-                      <option key={village.id} value={village.id}>
-                        {village.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+      <form onSubmit={handleSave}>
+        <label>
+          গ্রাম নির্বাচন করুন
+          <select
+            value={selectedVillageId}
+            onChange={(e) => handleVillageChange(e.target.value)}
+            required
+          >
+            <option value="">গ্রাম নির্বাচন করুন</option>
+            {villages.map((village) => (
+              <option key={village.id} value={village.id}>
+                {village.name}
+              </option>
+            ))}
+          </select>
+        </label>
 
-                {selectedVillage && (
-                  <div className="rounded-xl bg-green-50 border border-green-100 p-4 text-green-800">
-                    নির্বাচিত গ্রাম: <strong>{selectedVillage.name}</strong>
-                  </div>
-                )}
+        {selectedVillage && (
+          <p style={{ color: "#176b4a", marginTop: "15px" }}>
+            নির্বাচিত গ্রাম: <strong>{selectedVillage.name}</strong>
+          </p>
+        )}
 
-                <label className="block">
-                  <span className="block mb-2 font-semibold">
-                    গ্রামের ইতিহাস
-                  </span>
-                  <textarea
-                    value={history}
-                    onChange={(e) => setHistory(e.target.value)}
-                    rows={6}
-                    placeholder="এখানে গ্রামের ইতিহাস লিখুন..."
-                    className="w-full border border-gray-200 rounded-xl p-4 outline-none focus:border-green-600"
-                  />
-                </label>
+        <label>
+          গ্রামের ইতিহাস
+          <textarea
+            value={history}
+            onChange={(e) => setHistory(e.target.value)}
+            rows={6}
+            placeholder="এখানে গ্রামের ইতিহাস লিখুন..."
+          />
+        </label>
 
-                <label className="block">
-                  <span className="block mb-2 font-semibold">
-                    গ্রামের পরিচিতি
-                  </span>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows={6}
-                    placeholder="এখানে গ্রামের পরিচিতি লিখুন..."
-                    className="w-full border border-gray-200 rounded-xl p-4 outline-none focus:border-green-600"
-                  />
-                </label>
+        <label>
+          গ্রামের পরিচিতি
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={6}
+            placeholder="এখানে গ্রামের পরিচিতি লিখুন..."
+          />
+        </label>
 
-                <button
-                  type="submit"
-                  disabled={loading || !selectedVillageId}
-                  className="w-full md:w-auto bg-green-700 hover:bg-green-800 text-white font-semibold px-10 py-4 rounded-xl shadow-md disabled:opacity-50"
-                >
-                  {loading ? "Saving..." : "💾 তথ্য সংরক্ষণ করুন"}
-                </button>
-              </form>
-            </div>
+        <button type="submit" disabled={loading || !selectedVillageId}>
+          {loading ? "Saving..." : "💾 তথ্য সংরক্ষণ করুন"}
+        </button>
+      </form>
+    </div>
 
-            {message && (
-              <p className="mt-5 p-4 rounded-xl bg-green-50 text-green-800 break-words">
-                {message}
-              </p>
-            )}
+    {message && (
+      <p className="admin-message">{message}</p>
+    )}
 
-            <footer className="text-center text-gray-400 text-sm mt-10">
-              © 2026 Amar Gram | Admin Dashboard
-            </footer>
-          </section>
-        </div>
+    <div className="admin-footer">
+      © 2026 Amar Gram | Admin Dashboard
+    </div>
+  </section>
+</div>
+
       )}
     </main>
   );
