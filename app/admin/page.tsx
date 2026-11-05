@@ -57,7 +57,7 @@ export default function AdminPage() {
     if (data.user?.app_metadata?.role === "admin") {
       setIsAdmin(true);
       await loadVillages();
-      setMessage("Admin Login Successful!");
+      setMessage("স্বাগতম! Admin Login Successful.");
     } else {
       await supabase.auth.signOut();
       setMessage("তোমার Admin permission নেই।");
@@ -87,9 +87,7 @@ export default function AdminPage() {
 
   function handleVillageChange(id: string) {
     setSelectedVillageId(id);
-
     const village = villages.find((v) => v.id === id);
-
     setHistory(village?.history || "");
     setDescription(village?.description || "");
     setMessage("");
@@ -108,10 +106,7 @@ export default function AdminPage() {
 
     const { error } = await supabase
       .from("villages")
-      .update({
-        history,
-        description,
-      })
+      .update({ history, description })
       .eq("id", selectedVillageId);
 
     if (error) {
@@ -124,7 +119,6 @@ export default function AdminPage() {
             : village
         )
       );
-
       setMessage("গ্রামের তথ্য সফলভাবে সংরক্ষণ হয়েছে!");
     }
 
@@ -143,189 +137,284 @@ export default function AdminPage() {
     setMessage("Logout successful.");
   }
 
+  const selectedVillage = villages.find(
+    (village) => village.id === selectedVillageId
+  );
+
   return (
-    <main className="min-h-screen bg-gray-100 flex items-center justify-center p-5">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-6 md:p-8">
-        <h1 className="text-3xl font-bold text-center text-green-700 mb-2">
-          আমার গ্রাম
-        </h1>
-
-        <p className="text-center text-gray-500 mb-8">
-          Admin Panel
-        </p>
-
-        {isAdmin ? (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-green-700">
-                Welcome, Admin!
-              </h2>
-
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg"
-              >
-                Logout
-              </button>
+    <main className="min-h-screen bg-[#f3f7f2] text-gray-800">
+      {!isAdmin ? (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-[#edf4eb]">
+          <div className="w-full max-w-5xl bg-white rounded-3xl overflow-hidden shadow-2xl grid md:grid-cols-2">
+            <div className="relative min-h-[280px] md:min-h-[600px]">
+              <img
+                src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200"
+                alt="সবুজ গ্রামের প্রকৃতি"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-green-950/55 flex flex-col justify-end p-8 md:p-12 text-white">
+                <p className="text-green-200 font-semibold tracking-widest text-sm">
+                  WELCOME TO
+                </p>
+                <h1 className="text-4xl md:text-5xl font-bold mt-3">
+                  আমার গ্রাম
+                </h1>
+                <p className="mt-4 text-green-50 text-lg">
+                  গ্রামের ইতিহাস, ঐতিহ্য ও পরিচয় সংরক্ষণের একটি ডিজিটাল
+                  ঠিকানা।
+                </p>
+              </div>
             </div>
 
-            <div className="border-t pt-6">
-              <h2 className="text-xl font-bold text-green-700 mb-5">
-                গ্রামের তথ্য যোগ / পরিবর্তন
-              </h2>
+            <div className="p-7 md:p-12 flex flex-col justify-center">
+              <div className="text-center mb-8">
+                <div className="text-5xl mb-4">🌿</div>
+                <h2 className="text-3xl font-bold text-green-800">
+                  {forgotPassword ? "Reset Password" : "Admin Login"}
+                </h2>
+                <p className="text-gray-500 mt-2">
+                  আমার গ্রাম - Administration Portal
+                </p>
+              </div>
 
-              <form onSubmit={handleSave} className="space-y-5">
-                <div>
-                  <label className="block mb-2 font-medium">
-                    গ্রাম নির্বাচন করুন
+              {forgotPassword ? (
+                <form onSubmit={handleForgotPassword} className="space-y-5">
+                  <label className="block">
+                    <span className="block mb-2 font-medium">Admin Email</span>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder="Enter your email"
+                      className="w-full border border-gray-200 rounded-xl p-4 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                    />
                   </label>
 
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-4 rounded-xl disabled:opacity-50"
+                  >
+                    {loading ? "Sending..." : "Send Reset Link"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotPassword(false);
+                      setMessage("");
+                    }}
+                    className="w-full text-green-700 font-medium"
+                  >
+                    ← Back to Login
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleLogin} className="space-y-5">
+                  <label className="block">
+                    <span className="block mb-2 font-medium">Email Address</span>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder="Admin email"
+                      className="w-full border border-gray-200 rounded-xl p-4 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="block mb-2 font-medium">Password</span>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      placeholder="Enter password"
+                      className="w-full border border-gray-200 rounded-xl p-4 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                    />
+                  </label>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold py-4 rounded-xl shadow-lg disabled:opacity-50"
+                  >
+                    {loading ? "Logging in..." : "Login to Dashboard →"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotPassword(true);
+                      setMessage("");
+                    }}
+                    className="w-full text-green-700 font-medium hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </form>
+              )}
+
+              {message && (
+                <p className="mt-5 text-center text-sm text-gray-700 break-words">
+                  {message}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="min-h-screen md:flex">
+          <aside className="w-full md:w-64 bg-[#174c35] text-white md:min-h-screen p-6">
+            <div className="text-2xl font-bold mb-2">🌿 আমার গ্রাম</div>
+            <p className="text-green-200 text-sm mb-8">Admin Dashboard</p>
+
+            <nav className="space-y-2">
+              <a href="#dashboard" className="block p-3 rounded-xl bg-white/15">
+                📊 Dashboard
+              </a>
+              <a href="#village-management" className="block p-3 rounded-xl hover:bg-white/10">
+                🏡 Village Management
+              </a>
+              <a href="/" className="block p-3 rounded-xl hover:bg-white/10">
+                🌐 View Website
+              </a>
+            </nav>
+
+            <button
+              onClick={handleLogout}
+              className="mt-8 w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold"
+            >
+              ↪ Logout
+            </button>
+          </aside>
+
+          <section className="flex-1 p-5 md:p-9">
+            <div id="dashboard" className="mb-8">
+              <p className="text-green-700 font-semibold text-sm">
+                ADMINISTRATION
+              </p>
+              <h1 className="text-3xl font-bold mt-2">Dashboard Overview</h1>
+              <p className="text-gray-500 mt-2">
+                আমার গ্রাম ওয়েবসাইটের তথ্য পরিচালনা করো।
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-100">
+                <div className="text-3xl mb-3">🏡</div>
+                <p className="text-gray-500">মোট গ্রাম</p>
+                <h2 className="text-3xl font-bold text-green-800 mt-2">
+                  {villages.length}
+                </h2>
+              </div>
+
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-100">
+                <div className="text-3xl mb-3">📝</div>
+                <p className="text-gray-500">তথ্য পরিচালনা</p>
+                <h2 className="text-xl font-bold text-green-800 mt-2">
+                  Village Information
+                </h2>
+              </div>
+
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-100">
+                <div className="text-3xl mb-3">🌐</div>
+                <p className="text-gray-500">Website Status</p>
+                <h2 className="text-xl font-bold text-green-800 mt-2">
+                  Connected
+                </h2>
+              </div>
+            </div>
+
+            <div
+              id="village-management"
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8"
+            >
+              <div className="mb-7">
+                <h2 className="text-2xl font-bold text-green-800">
+                  🏡 Village Information Management
+                </h2>
+                <p className="text-gray-500 mt-2">
+                  গ্রামের ইতিহাস ও পরিচিতি যোগ অথবা পরিবর্তন করো।
+                </p>
+              </div>
+
+              <form onSubmit={handleSave} className="space-y-6">
+                <label className="block">
+                  <span className="block mb-2 font-semibold">
+                    গ্রাম নির্বাচন করুন
+                  </span>
                   <select
                     value={selectedVillageId}
                     onChange={(e) => handleVillageChange(e.target.value)}
                     required
-                    className="w-full border rounded-lg p-3 bg-white"
+                    className="w-full border border-gray-200 rounded-xl p-4 bg-white focus:border-green-600 outline-none"
                   >
                     <option value="">গ্রাম নির্বাচন করুন</option>
-
                     {villages.map((village) => (
                       <option key={village.id} value={village.id}>
                         {village.name}
                       </option>
                     ))}
                   </select>
-                </div>
+                </label>
 
-                <div>
-                  <label className="block mb-2 font-medium">
+                {selectedVillage && (
+                  <div className="rounded-xl bg-green-50 border border-green-100 p-4 text-green-800">
+                    নির্বাচিত গ্রাম: <strong>{selectedVillage.name}</strong>
+                  </div>
+                )}
+
+                <label className="block">
+                  <span className="block mb-2 font-semibold">
                     গ্রামের ইতিহাস
-                  </label>
-
+                  </span>
                   <textarea
                     value={history}
                     onChange={(e) => setHistory(e.target.value)}
-                    rows={5}
+                    rows={6}
                     placeholder="এখানে গ্রামের ইতিহাস লিখুন..."
-                    className="w-full border rounded-lg p-3"
+                    className="w-full border border-gray-200 rounded-xl p-4 outline-none focus:border-green-600"
                   />
-                </div>
+                </label>
 
-                <div>
-                  <label className="block mb-2 font-medium">
+                <label className="block">
+                  <span className="block mb-2 font-semibold">
                     গ্রামের পরিচিতি
-                  </label>
-
+                  </span>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    rows={5}
+                    rows={6}
                     placeholder="এখানে গ্রামের পরিচিতি লিখুন..."
-                    className="w-full border rounded-lg p-3"
+                    className="w-full border border-gray-200 rounded-xl p-4 outline-none focus:border-green-600"
                   />
-                </div>
+                </label>
 
                 <button
                   type="submit"
                   disabled={loading || !selectedVillageId}
-                  className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold disabled:opacity-50"
+                  className="w-full md:w-auto bg-green-700 hover:bg-green-800 text-white font-semibold px-10 py-4 rounded-xl shadow-md disabled:opacity-50"
                 >
-                  {loading ? "Saving..." : "তথ্য সংরক্ষণ করুন"}
+                  {loading ? "Saving..." : "💾 তথ্য সংরক্ষণ করুন"}
                 </button>
               </form>
             </div>
-          </div>
-        ) : forgotPassword ? (
-          <form onSubmit={handleForgotPassword} className="space-y-5">
-            <div>
-              <label className="block mb-2 font-medium">
-                Admin Email Address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full border rounded-lg p-3"
-                placeholder="Admin email"
-              />
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-green-700 text-white py-3 rounded-lg disabled:opacity-50"
-            >
-              {loading ? "Sending..." : "Send Reset Link"}
-            </button>
+            {message && (
+              <p className="mt-5 p-4 rounded-xl bg-green-50 text-green-800 break-words">
+                {message}
+              </p>
+            )}
 
-            <button
-              type="button"
-              onClick={() => {
-                setForgotPassword(false);
-                setMessage("");
-              }}
-              className="w-full text-green-700 underline"
-            >
-              Back to Login
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div>
-              <label className="block mb-2 font-medium">
-                Email Address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full border rounded-lg p-3"
-                placeholder="Admin email"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full border rounded-lg p-3"
-                placeholder="Password"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold disabled:opacity-50"
-            >
-              {loading ? "Logging in..." : "Login"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setForgotPassword(true);
-                setMessage("");
-              }}
-              className="w-full text-green-700 underline"
-            >
-              Forgot Password?
-            </button>
-          </form>
-        )}
-
-        {message && (
-          <p className="text-center mt-5 text-sm text-gray-700 break-words">
-            {message}
-          </p>
-        )}
-      </div>
+            <footer className="text-center text-gray-400 text-sm mt-10">
+              © 2026 Amar Gram | Admin Dashboard
+            </footer>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
