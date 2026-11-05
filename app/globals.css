@@ -197,3 +197,12 @@ footer { padding: 25px clamp(20px, 9vw, 130px); display: flex; justify-content: 
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 760px) {
+  .tagline { display: none; }
+  .hero { grid-template-columns: 1fr; padding-top: 48px; }
+  .hero-art { min-height: 260px; }
+  .cards { grid-template-columns: 1fr; }
+  .notice { margin-bottom: 45px; padding: 25px; }
+  .notice-icon { display: none; }
+  footer { flex-direction: column; }
+}
