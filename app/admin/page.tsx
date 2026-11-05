@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 type Village = {
@@ -10,7 +10,15 @@ type Village = {
   history: string | null;
   description: string | null;
 };
-
+type Place = {
+  id: string;
+  name: string;
+  description: string | null;
+  address: string | null;
+  image_url: string | null;
+  status: string;
+  village_id: string;
+};
 export default function AdminPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
