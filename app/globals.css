@@ -55,3 +55,145 @@ footer { padding: 25px clamp(20px, 9vw, 130px); display: flex; justify-content: 
   .notice-icon { display: none; }
   footer { flex-direction: column; }
 }
+/* ADMIN DASHBOARD DESIGN */
+
+.admin-dashboard {
+  min-height: 100vh;
+  display: flex;
+  background: #f3f7f4;
+  color: #17352a;
+}
+
+.admin-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #176b4a, #10402f);
+  color: white;
+  padding: 30px 22px;
+}
+
+.admin-sidebar h2 {
+  font-size: 25px;
+  margin-bottom: 8px;
+}
+
+.admin-sidebar nav {
+  margin-top: 45px;
+  display: grid;
+  gap: 12px;
+}
+
+.admin-sidebar nav a {
+  padding: 14px;
+  border-radius: 12px;
+  color: white;
+  transition: .2s;
+}
+
+.admin-sidebar nav a:hover {
+  background: #ffffff25;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 40px;
+  min-width: 0;
+}
+
+.admin-header {
+  margin-bottom: 30px;
+}
+
+.admin-header h1 {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-bottom: 35px;
+}
+
+.admin-stat-card,
+.admin-panel {
+  background: white;
+  padding: 27px;
+  border-radius: 18px;
+  border: 1px solid #e4eee7;
+  box-shadow: 0 8px 25px #17452a0c;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-4px);
+  transition: .2s;
+}
+
+.admin-stat-card .stat-icon {
+  font-size: 35px;
+  margin-bottom: 12px;
+}
+
+.admin-stat-card h3 {
+  font-size: 28px;
+  color: #176b4a;
+  margin-top: 10px;
+}
+
+.admin-panel h2 {
+  font-size: 24px;
+  color: #176b4a;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.admin-panel label {
+  display: block;
+  font-weight: 600;
+  margin-top: 22px;
+}
+
+.admin-panel input,
+.admin-panel select,
+.admin-panel textarea {
+  width: 100%;
+  padding: 14px;
+  margin-top: 9px;
+  border: 1px solid #dce7df;
+  border-radius: 11px;
+  background: #fbfdfb;
+  font: inherit;
+}
+
+.admin-panel button {
+  background: #176b4a;
+  color: white;
+  border: none;
+  padding: 14px 25px;
+  border-radius: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-panel button:hover {
+  background: #104d37;
+}
+
+@media (max-width: 760px) {
+  .admin-dashboard {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+  }
+
+  .admin-content {
+    padding: 20px;
+  }
+
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+}
