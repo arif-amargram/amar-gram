@@ -289,10 +289,11 @@ export default function HomePage() {
               <select
                 value={selectedVillage?.id || ""}
                 onChange={(e) => {
-                  const village = villages.find(
-                    (v) => String(v.id) === String(e.target.value)
-                  setSelectedVillage(village || null);
-                }}
+  const village = villages.find(
+    (v) => String(v.id) === String(e.target.value)
+  );
+  setSelectedVillage(village || null);
+}}
                 style={{
                   width: "100%",
                   padding: "12px",
