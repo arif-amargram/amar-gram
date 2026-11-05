@@ -83,6 +83,7 @@ async function loadPlaces() {
     if (data.user?.app_metadata?.role === "admin") {
       setIsAdmin(true);
       await loadVillages();
+      await loadPlaces();
       setMessage("স্বাগতম! Admin Login Successful.");
     } else {
       await supabase.auth.signOut();
