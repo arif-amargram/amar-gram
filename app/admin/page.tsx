@@ -31,7 +31,13 @@ export default function AdminPage() {
   const [selectedVillageId, setSelectedVillageId] = useState("");
   const [history, setHistory] = useState("");
   const [description, setDescription] = useState("");
-
+const [places, setPlaces] = useState<Place[]>([]);
+const [placeName, setPlaceName] = useState("");
+const [placeDescription, setPlaceDescription] = useState("");
+const [placeAddress, setPlaceAddress] = useState("");
+const [placeVillageId, setPlaceVillageId] = useState("");
+const [placeImage, setPlaceImage] = useState<File | null>(null);
+const [placeLoading, setPlaceLoading] = useState(false);
   async function loadVillages() {
     const { data, error } = await supabase
       .from("villages")
