@@ -151,7 +151,64 @@ async function loadPlaces() {
 
     setLoading(false);
   }
+async function handleAddPlace(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
 
+  if (!placeVillageId) {
+    setMessage("প্রথমে একটি গ্রাম নির্বাচন করুন।");
+    return;
+  }
+
+  setPlaceLoading(true);
+  setMessage("");
+
+  let imageUrl = "";
+
+  if (placeImage) {
+    const fileName = `${Date.now()}-${placeImage.name.replace(/\s/g, "-")}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("village-places")
+      .upload(fileName, placeImage);
+
+    if (uploadError) {
+      setMessage("ছবি Upload হয়নি: " + uploadError.message);
+      setPlaceLoading(false);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("village-places")
+      .getPublicUrl(fileName);
+
+    imageUrl = data.publicUrl;
+  }
+
+  const { error } = await supabase.from("places").insert({
+    name: placeName,
+    description: placeDescription,
+    address: placeAddress,
+    image_url: imageUrl,
+    village_id: placeVillageId,
+    status: "published",
+  });
+
+  if (error) {
+    setMessage("তথ্য Save হয়নি: " + error.message);
+  } else {
+    setMessage("দর্শনীয় স্থান সফলভাবে যোগ হয়েছে!");
+
+    setPlaceName("");
+    setPlaceDescription("");
+    setPlaceAddress("");
+    setPlaceVillageId("");
+    setPlaceImage(null);
+
+    await loadPlaces();
+  }
+
+  setPlaceLoading(false);
+}
   async function handleLogout() {
     await supabase.auth.signOut();
     setIsAdmin(false);
@@ -395,6 +452,108 @@ async function loadPlaces() {
         </button>
       </form>
     </div>
+
+<div className="admin-panel" style={{ marginTop: "30px" }}>
+  <h2>📍 Tourist Places Management</h2>
+  <p>গ্রামের দর্শনীয় স্থান ও ছবি যোগ করুন।</p>
+
+  <form onSubmit={handleAddPlace}>
+    <label>
+      দর্শনীয় স্থানের নাম
+      <input
+        type="text"
+        value={placeName}
+        onChange={(e) => setPlaceName(e.target.value)}
+        placeholder="যেমন: ঐতিহাসিক মসজিদ"
+        required
+      />
+    </label>
+
+    <label>
+      গ্রাম নির্বাচন করুন
+      <select
+        value={placeVillageId}
+        onChange={(e) => setPlaceVillageId(e.target.value)}
+        required
+      >
+        <option value="">গ্রাম নির্বাচন করুন</option>
+        {villages.map((village) => (
+          <option key={village.id} value={village.id}>
+            {village.name}
+          </option>
+        ))}
+      </select>
+    </label>
+
+    <label>
+      স্থানের ঠিকানা
+      <input
+        type="text"
+        value={placeAddress}
+        onChange={(e) => setPlaceAddress(e.target.value)}
+        placeholder="স্থানের ঠিকানা লিখুন"
+      />
+    </label>
+
+    <label>
+      স্থানের বিবরণ
+      <textarea
+        rows={5}
+        value={placeDescription}
+        onChange={(e) => setPlaceDescription(e.target.value)}
+        placeholder="দর্শনীয় স্থানের বিস্তারিত লিখুন..."
+      />
+    </label>
+
+    <label>
+      স্থানের ছবি আপলোড
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) =>
+          setPlaceImage(e.target.files?.[0] || null)
+        }
+      />
+    </label>
+
+    <button type="submit" disabled={placeLoading}>
+      {placeLoading ? "Uploading..." : "📤 দর্শনীয় স্থান যোগ করুন"}
+    </button>
+  </form>
+
+  <div style={{ marginTop: "30px" }}>
+    <h3>সংরক্ষিত দর্শনীয় স্থান: {places.length}</h3>
+
+    {places.map((place) => (
+      <div
+        key={place.id}
+        style={{
+          padding: "15px",
+          marginTop: "15px",
+          border: "1px solid #e4eee7",
+          borderRadius: "12px",
+        }}
+      >
+        {place.image_url && (
+          <img
+            src={place.image_url}
+            alt={place.name}
+            style={{
+              width: "100%",
+              maxWidth: "300px",
+              height: "180px",
+              objectFit: "cover",
+              borderRadius: "10px",
+            }}
+          />
+        )}
+        <h3>{place.name}</h3>
+        <p>{place.address}</p>
+        <p>{place.description}</p>
+      </div>
+    ))}
+  </div>
+</div>
 
     {message && (
       <p className="admin-message">{message}</p>
