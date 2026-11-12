@@ -318,6 +318,11 @@ async function loadPlaces(villageId: string) {
     (v) => String(v.id) === String(e.target.value)
   );
   setSelectedVillage(village || null);
+                  if (village) {
+  loadPlaces(village.id);
+} else {
+  setPlaces([]);
+}
 }}
                 style={{
                   width: "100%",
