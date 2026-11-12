@@ -38,7 +38,8 @@ export default function HomePage() {
   const [upazilas, setUpazilas] = useState<LocationItem[]>([]);
   const [unions, setUnions] = useState<LocationItem[]>([]);
   const [villages, setVillages] = useState<VillageItem[]>([]);
-
+const [places, setPlaces] = useState<PlaceItem[]>([]);
+const [placesLoading, setPlacesLoading] = useState(false);
   const [divisionId, setDivisionId] = useState("");
   const [districtId, setDistrictId] = useState("");
   const [upazilaId, setUpazilaId] = useState("");
