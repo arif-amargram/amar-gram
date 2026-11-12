@@ -16,6 +16,7 @@ type VillageItem = {
   history: string | null;
   description: string | null;
 };
+
 type PlaceItem = {
   id: string;
   name: string;
@@ -23,6 +24,7 @@ type PlaceItem = {
   address: string | null;
   image_url: string | null;
 };
+
 const cards = [
   { icon: "🏡", title: "গ্রামের ইতিহাস", desc: "গ্রামের জন্ম, ঐতিহ্য ও অতীতের গল্প জানুন।" },
   { icon: "🌳", title: "দর্শনীয় স্থান", desc: "গ্রামের সুন্দর ও আকর্ষণীয় জায়গাগুলো ঘুরে দেখুন।" },
@@ -38,8 +40,10 @@ export default function HomePage() {
   const [upazilas, setUpazilas] = useState<LocationItem[]>([]);
   const [unions, setUnions] = useState<LocationItem[]>([]);
   const [villages, setVillages] = useState<VillageItem[]>([]);
-const [places, setPlaces] = useState<PlaceItem[]>([]);
-const [placesLoading, setPlacesLoading] = useState(false);
+
+  const [places, setPlaces] = useState<PlaceItem[]>([]);
+  const [placesLoading, setPlacesLoading] = useState(false);
+
   const [divisionId, setDivisionId] = useState("");
   const [districtId, setDistrictId] = useState("");
   const [upazilaId, setUpazilaId] = useState("");
@@ -77,6 +81,7 @@ const [placesLoading, setPlacesLoading] = useState(false);
     setUnions([]);
     setVillages([]);
     setSelectedVillage(null);
+    setPlaces([]);
     setErrorMessage("");
 
     if (!value) return;
@@ -102,6 +107,7 @@ const [placesLoading, setPlacesLoading] = useState(false);
     setUnions([]);
     setVillages([]);
     setSelectedVillage(null);
+    setPlaces([]);
     setErrorMessage("");
 
     if (!value) return;
@@ -125,6 +131,7 @@ const [placesLoading, setPlacesLoading] = useState(false);
     setUnions([]);
     setVillages([]);
     setSelectedVillage(null);
+    setPlaces([]);
     setErrorMessage("");
 
     if (!value) return;
@@ -146,6 +153,7 @@ const [placesLoading, setPlacesLoading] = useState(false);
     setUnionId(value);
     setVillages([]);
     setSelectedVillage(null);
+    setPlaces([]);
     setErrorMessage("");
 
     if (!value) return;
@@ -163,25 +171,27 @@ const [placesLoading, setPlacesLoading] = useState(false);
 
     setLoading(false);
   }
-async function loadPlaces(villageId: string) {
-  setPlacesLoading(true);
-  setPlaces([]);
 
-  const { data, error } = await supabase
-    .from("places")
-    .select("id, name, description, address, image_url")
-    .eq("village_id", villageId)
-    .eq("status", "published")
-    .order("name");
+  async function loadPlaces(villageId: string) {
+    setPlacesLoading(true);
+    setPlaces([]);
 
-  if (error) {
-    console.error("Places loading error:", error.message);
-  } else {
-    setPlaces(data || []);
+    const { data, error } = await supabase
+      .from("places")
+      .select("id, name, description, address, image_url")
+      .eq("village_id", villageId)
+      .eq("status", "published")
+      .order("name");
+
+    if (error) {
+      console.error("Places loading error:", error.message);
+    } else {
+      setPlaces(data || []);
+    }
+
+    setPlacesLoading(false);
   }
 
-  setPlacesLoading(false);
-}
   return (
     <main>
       <header className="topbar">
@@ -314,16 +324,18 @@ async function loadPlaces(villageId: string) {
               <select
                 value={selectedVillage?.id || ""}
                 onChange={(e) => {
-  const village = villages.find(
-    (v) => String(v.id) === String(e.target.value)
-  );
-  setSelectedVillage(village || null);
+                  const village = villages.find(
+                    (v) => String(v.id) === String(e.target.value)
+                  );
+
+                  setSelectedVillage(village || null);
+
                   if (village) {
-  loadPlaces(village.id);
-} else {
-  setPlaces([]);
-}
-}}
+                    loadPlaces(village.id);
+                  } else {
+                    setPlaces([]);
+                  }
+                }}
                 style={{
                   width: "100%",
                   padding: "12px",
@@ -380,12 +392,71 @@ async function loadPlaces(villageId: string) {
               🏡 {selectedVillage.name}
             </h2>
             <h3>গ্রামের ইতিহাস</h3>
-            <p>{selectedVillage.history || "ইতিহাসের তথ্য এখনো যোগ করা হয়নি।"}</p>
+            <p>
+              {selectedVillage.history || "ইতিহাসের তথ্য এখনো যোগ করা হয়নি।"}
+            </p>
             <h3 style={{ marginTop: "15px" }}>গ্রামের পরিচিতি</h3>
             <p>
               {selectedVillage.description ||
                 "গ্রামের পরিচিতির তথ্য এখনো যোগ করা হয়নি।"}
             </p>
+          </div>
+        )}
+
+        {selectedVillage && (
+          <div style={{ maxWidth: "900px", margin: "25px auto" }}>
+            <h2 style={{ color: "#176b4a", marginBottom: "18px" }}>
+              📍 {selectedVillage.name} গ্রামের দর্শনীয় স্থান
+            </h2>
+
+            {placesLoading && (
+              <p>দর্শনীয় স্থানের তথ্য লোড হচ্ছে...</p>
+            )}
+
+            {!placesLoading && places.length === 0 && (
+              <p>এই গ্রামের দর্শনীয় স্থানের তথ্য এখনো যোগ করা হয়নি।</p>
+            )}
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: "20px",
+              }}
+            >
+              {places.map((place) => (
+                <article
+                  key={place.id}
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #e4eee7",
+                    borderRadius: "14px",
+                    overflow: "hidden",
+                    boxShadow: "0 5px 20px rgba(0,0,0,0.06)",
+                  }}
+                >
+                  {place.image_url && (
+                    <img
+                      src={place.image_url}
+                      alt={place.name}
+                      style={{
+                        width: "100%",
+                        height: "190px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
+
+                  <div style={{ padding: "18px" }}>
+                    <h3 style={{ color: "#176b4a", marginBottom: "8px" }}>
+                      {place.name}
+                    </h3>
+                    {place.address && <p>📍 {place.address}</p>}
+                    {place.description && <p>{place.description}</p>}
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         )}
       </section>
