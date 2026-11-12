@@ -163,7 +163,25 @@ const [placesLoading, setPlacesLoading] = useState(false);
 
     setLoading(false);
   }
+async function loadPlaces(villageId: string) {
+  setPlacesLoading(true);
+  setPlaces([]);
 
+  const { data, error } = await supabase
+    .from("places")
+    .select("id, name, description, address, image_url")
+    .eq("village_id", villageId)
+    .eq("status", "published")
+    .order("name");
+
+  if (error) {
+    console.error("Places loading error:", error.message);
+  } else {
+    setPlaces(data || []);
+  }
+
+  setPlacesLoading(false);
+}
   return (
     <main>
       <header className="topbar">
