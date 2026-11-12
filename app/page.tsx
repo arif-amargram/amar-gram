@@ -16,7 +16,13 @@ type VillageItem = {
   history: string | null;
   description: string | null;
 };
-
+type PlaceItem = {
+  id: string;
+  name: string;
+  description: string | null;
+  address: string | null;
+  image_url: string | null;
+};
 const cards = [
   { icon: "🏡", title: "গ্রামের ইতিহাস", desc: "গ্রামের জন্ম, ঐতিহ্য ও অতীতের গল্প জানুন।" },
   { icon: "🌳", title: "দর্শনীয় স্থান", desc: "গ্রামের সুন্দর ও আকর্ষণীয় জায়গাগুলো ঘুরে দেখুন।" },
