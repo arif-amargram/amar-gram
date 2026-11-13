@@ -630,6 +630,113 @@ async function handleAddPerson(e: React.FormEvent<HTMLFormElement>) {
   </div>
 </div>
 
+<div className="admin-panel" style={{ marginTop: "30px" }}>
+  <h2>👨‍👩‍👧 কৃতী ব্যক্তিত্ব Management</h2>
+  <p>গ্রামের গুণী ও পরিচিত ব্যক্তিদের তথ্য যোগ করুন।</p>
+
+  <form onSubmit={handleAddPerson}>
+    <label>
+      ব্যক্তির নাম
+      <input
+        type="text"
+        value={personName}
+        onChange={(e) => setPersonName(e.target.value)}
+        placeholder="ব্যক্তির নাম লিখুন"
+        required
+      />
+    </label>
+
+    <label>
+      পরিচয় / পদবি
+      <input
+        type="text"
+        value={personDesignation}
+        onChange={(e) => setPersonDesignation(e.target.value)}
+        placeholder="যেমন: শিক্ষক, মুক্তিযোদ্ধা, সমাজসেবক"
+        required
+      />
+    </label>
+
+    <label>
+      গ্রাম নির্বাচন করুন
+      <select
+        value={personVillageId}
+        onChange={(e) => setPersonVillageId(e.target.value)}
+        required
+      >
+        <option value="">গ্রাম নির্বাচন করুন</option>
+        {villages.map((village) => (
+          <option key={village.id} value={village.id}>
+            {village.name}
+          </option>
+        ))}
+      </select>
+    </label>
+
+    <label>
+      ব্যক্তির পরিচিতি
+      <textarea
+        rows={5}
+        value={personDescription}
+        onChange={(e) => setPersonDescription(e.target.value)}
+        placeholder="ব্যক্তির বিস্তারিত পরিচিতি লিখুন..."
+      />
+    </label>
+
+    <label>
+      মোবাইল নম্বর
+      <input
+        type="tel"
+        value={personPhone}
+        onChange={(e) => setPersonPhone(e.target.value)}
+        placeholder="মোবাইল নম্বর লিখুন"
+      />
+    </label>
+
+    <label style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+      <input
+        type="checkbox"
+        checked={personConsent}
+        onChange={(e) => setPersonConsent(e.target.checked)}
+        required
+      />
+      ব্যক্তির তথ্য প্রকাশের সম্মতি নেওয়া হয়েছে।
+    </label>
+
+    <button
+      type="submit"
+      disabled={personLoading || !personConsent}
+    >
+      {personLoading ? "Saving..." : "👤 কৃতী ব্যক্তিত্ব যোগ করুন"}
+    </button>
+  </form>
+
+  <div style={{ marginTop: "30px" }}>
+    <h3>সংরক্ষিত কৃতী ব্যক্তিত্ব: {people.length}</h3>
+
+    {people.map((person) => (
+      <div
+        key={person.id}
+        style={{
+          padding: "15px",
+          marginTop: "15px",
+          border: "1px solid #e4eee7",
+          borderRadius: "12px",
+        }}
+      >
+        <h3>{person.name}</h3>
+        <p><strong>{person.designation}</strong></p>
+        <p>
+          গ্রাম: {villages.find((v) => v.id === person.village_id)?.name || ""}
+        </p>
+        <p>{person.description}</p>
+        <p>{person.phone}</p>
+        <p>স্ট্যাটাস: {person.status}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
     {message && (
       <p className="admin-message">{message}</p>
     )}
