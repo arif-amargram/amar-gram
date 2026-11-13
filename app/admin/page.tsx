@@ -114,8 +114,9 @@ async function loadPeople() {
     if (data.user?.app_metadata?.role === "admin") {
       setIsAdmin(true);
       await loadVillages();
-      await loadPlaces();
-      setMessage("স্বাগতম! Admin Login Successful.");
+await loadPlaces();
+await loadPeople();
+setMessage("স্বাগতম! Admin Login Successful.");
     } else {
       await supabase.auth.signOut();
       setMessage("তোমার Admin permission নেই।");
