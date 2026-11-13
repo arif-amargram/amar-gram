@@ -70,6 +70,19 @@ const [personLoading, setPersonLoading] = useState(false);
     setVillages(data || []);
   }
 async function loadPlaces() {
+async function loadPeople() {
+  const { data, error } = await supabase
+    .from("people")
+    .select("*")
+    .order("name");
+
+  if (error) {
+    setMessage("কৃতী ব্যক্তিত্বের তথ্য লোড হয়নি: " + error.message);
+    return;
+  }
+
+  setPeople(data || []);
+}
   const { data, error } = await supabase
     .from("places")
     .select("*")
