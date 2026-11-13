@@ -184,7 +184,26 @@ const [peopleLoading, setPeopleLoading] = useState(false);
   async function loadPlaces(villageId: string) {
     setPlacesLoading(true);
     setPlaces([]);
+async function loadPeople(villageId: string) {
+  setPeopleLoading(true);
+  setPeople([]);
 
+  const { data, error } = await supabase
+    .from("people")
+    .select("id, village_id, name, designation, description, phone")
+    .eq("village_id", villageId)
+    .eq("status", "published")
+    .eq("consent_confirmed", true)
+    .order("name");
+
+  if (error) {
+    console.error("People loading error:", error.message);
+  } else {
+    setPeople(data || []);
+  }
+
+  setPeopleLoading(false);
+}
     const { data, error } = await supabase
       .from("places")
       .select("id, name, description, address, image_url")
