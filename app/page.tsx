@@ -49,6 +49,8 @@ export default function HomePage() {
   const [villages, setVillages] = useState<VillageItem[]>([]);
 
   const [places, setPlaces] = useState<PlaceItem[]>([]);
+  const [people, setPeople] = useState<PersonItem[]>([]);
+const [peopleLoading, setPeopleLoading] = useState(false);
   const [placesLoading, setPlacesLoading] = useState(false);
 
   const [divisionId, setDivisionId] = useState("");
