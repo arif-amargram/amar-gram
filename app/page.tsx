@@ -489,6 +489,53 @@ async function loadPeople(villageId: string) {
             </div>
           </div>
         )}
+            {selectedVillage && (
+          <div style={{ maxWidth: "900px", margin: "25px auto" }}>
+            <h2 style={{ color: "#176b4a", marginBottom: "18px" }}>
+              👨‍👩‍👧 {selectedVillage.name} গ্রামের কৃতী ব্যক্তিত্ব
+            </h2>
+
+            {peopleLoading && (
+              <p>কৃতী ব্যক্তিত্বের তথ্য লোড হচ্ছে...</p>
+            )}
+
+            {!peopleLoading && people.length === 0 && (
+              <p>এই গ্রামের কৃতী ব্যক্তিত্বের তথ্য এখনো যোগ করা হয়নি।</p>
+            )}
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: "20px",
+              }}
+            >
+              {people.map((person) => (
+                <article
+                  key={person.id}
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #e4eee7",
+                    borderRadius: "14px",
+                    padding: "18px",
+                    boxShadow: "0 5px 20px rgba(0,0,0,0.06)",
+                  }}
+                >
+                  <h3 style={{ color: "#176b4a", marginBottom: "8px" }}>
+                    {person.name}
+                  </h3>
+
+                  {person.designation && (
+                    <p><strong>{person.designation}</strong></p>
+                  )}
+
+                  {person.description && <p>{person.description}</p>}
+                  {person.phone && <p>📞 {person.phone}</p>}
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="section" id="information">
