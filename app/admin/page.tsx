@@ -241,6 +241,49 @@ async function handleAddPlace(e: React.FormEvent<HTMLFormElement>) {
 
   setPlaceLoading(false);
 }
+async function handleAddPerson(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+
+  if (!personVillageId) {
+    setMessage("প্রথমে একটি গ্রাম নির্বাচন করুন।");
+    return;
+  }
+
+  if (!personConsent) {
+    setMessage("ব্যক্তির তথ্য প্রকাশের সম্মতি নিশ্চিত করুন।");
+    return;
+  }
+
+  setPersonLoading(true);
+  setMessage("");
+
+  const { error } = await supabase.from("people").insert({
+    name: personName,
+    designation: personDesignation,
+    description: personDescription,
+    phone: personPhone,
+    village_id: personVillageId,
+    consent_confirmed: true,
+    status: "published",
+  });
+
+  if (error) {
+    setMessage("তথ্য সংরক্ষণ হয়নি: " + error.message);
+  } else {
+    setMessage("কৃতী ব্যক্তিত্বের তথ্য সফলভাবে যোগ হয়েছে!");
+
+    setPersonName("");
+    setPersonDesignation("");
+    setPersonDescription("");
+    setPersonPhone("");
+    setPersonVillageId("");
+    setPersonConsent(false);
+
+    await loadPeople();
+  }
+
+  setPersonLoading(false);
+}
   async function handleLogout() {
     await supabase.auth.signOut();
     setIsAdmin(false);
