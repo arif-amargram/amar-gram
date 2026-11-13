@@ -358,11 +358,13 @@ async function loadPeople(villageId: string) {
 
                   setSelectedVillage(village || null);
 
-                  if (village) {
-                    loadPlaces(village.id);
-                  } else {
-                    setPlaces([]);
-                  }
+                 if (village) {
+  loadPlaces(village.id);
+  loadPeople(village.id);
+} else {
+  setPlaces([]);
+  setPeople([]);
+}
                 }}
                 style={{
                   width: "100%",
