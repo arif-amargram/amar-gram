@@ -433,10 +433,11 @@ async function handleAddPerson(e: React.FormEvent<HTMLFormElement>) {
     <p style={{ color: "#c6e5d2" }}>Admin Control Panel</p>
 
     <nav>
-      <a href="#dashboard">📊 Dashboard</a>
-      <a href="#village-management">🏡 Village Management</a>
-      <a href="/">🌐 View Website</a>
-    </nav>
+  <a href="#dashboard">📊 Dashboard</a>
+  <a href="#village-management">🏡 Village Management</a>
+  <a href="#people-management">👨‍👩‍👧 কৃতী ব্যক্তিত্ব</a>
+  <a href="/">🌐 View Website</a>
+</nav>
 
     <button
       onClick={handleLogout}
@@ -528,7 +529,7 @@ async function handleAddPerson(e: React.FormEvent<HTMLFormElement>) {
       </form>
     </div>
 
-<div className="admin-panel" style={{ marginTop: "30px" }}>
+<div id="people-management" className="admin-panel" style={{ marginTop: "30px" }}>
   <h2>📍 Tourist Places Management</h2>
   <p>গ্রামের দর্শনীয় স্থান ও ছবি যোগ করুন।</p>
 
