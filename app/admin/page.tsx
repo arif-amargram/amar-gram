@@ -10,6 +10,16 @@ type Village = {
   history: string | null;
   description: string | null;
 };
+type Person = {
+  id: string;
+  village_id: string;
+  name: string;
+  designation: string | null;
+  description: string | null;
+  phone: string | null;
+  consent_confirmed: boolean;
+  status: string;
+};
 type Place = {
   id: string;
   name: string;
@@ -38,6 +48,14 @@ const [placeAddress, setPlaceAddress] = useState("");
 const [placeVillageId, setPlaceVillageId] = useState("");
 const [placeImage, setPlaceImage] = useState<File | null>(null);
 const [placeLoading, setPlaceLoading] = useState(false);
+  const [people, setPeople] = useState<Person[]>([]);
+const [personName, setPersonName] = useState("");
+const [personDesignation, setPersonDesignation] = useState("");
+const [personDescription, setPersonDescription] = useState("");
+const [personPhone, setPersonPhone] = useState("");
+const [personVillageId, setPersonVillageId] = useState("");
+const [personConsent, setPersonConsent] = useState(false);
+const [personLoading, setPersonLoading] = useState(false);
   async function loadVillages() {
     const { data, error } = await supabase
       .from("villages")
